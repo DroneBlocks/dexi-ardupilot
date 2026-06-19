@@ -59,13 +59,36 @@ define AP_DDS_ENABLED 1
 durable per-board enable — `Tools/ardupilotwaf/boards.py` reads it from the
 generated `hwdef.h`.)
 
-`defaults.parm` puts DDS on **UART4 (SERIAL4)** at 115200, separate from the
-TELEM1 MAVLink companion link:
+`defaults.parm` puts DDS on **SERIAL2 (USART2, PA2/PA3)** at 115200 —
+deliberately the **same physical UART PX4 uses for uXRCE-DDS** (PX4 TELEM2 /
+Air-Unit connector), so the DEXI-OS companion wiring is identical whether the
+board runs PX4 or ArduPilot:
 
 ```
-SERIAL4_PROTOCOL 45    # DDS (SerialProtocol_DDS_XRCE)
-SERIAL4_BAUD 115
+SERIAL2_PROTOCOL 45    # DDS (SerialProtocol_DDS_XRCE)
+SERIAL2_BAUD 115
 ```
+
+Port parity (ArduPilot SERIALn ↔ physical UART ↔ PX4 role):
+
+| ArduPilot | UART (pins) | PX4 role |
+|---|---|---|
+| SERIAL2 | USART2 (PA2/PA3) | TELEM2 — **uXRCE-DDS** |
+| SERIAL3 | USART3 (PD8/PD9) | TELEM1 — companion MAVLink |
+| SERIAL4 | UART4 (PA0/PA1)  | TELEM3 — optical flow |
+| SERIAL5 | USART6 (PC6/PC7) | RC |
+
+(ttyS→UART order inferred from the PX4 nuttx defconfig; VERIFIED anchors:
+TELEM1=USART3, flow=UART4. Confirm RC/DDS against the board silkscreen.)
+
+## Topics are namespaced under `/ap`
+
+All AP_DDS topics/services live under **`/ap`** (`/ap/pose/filtered`,
+`/ap/cmd_vel`, `/ap/clock`, ...). The `DDS_USE_NS=1` param inserts a
+`v<MAV_SYSID>` segment (`/ap/v1/...`) — use it for **classroom fleets** so
+multiple DEXI drones on one ROS 2 graph don't collide. (PX4 uses `/fmu/...`
+instead — both namespace, but differently, so flight nodes still need
+repointing.)
 
 ## The de-risking probe
 
