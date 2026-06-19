@@ -7,7 +7,7 @@
 #   ArduPilot SERIALn  | physical UART (pins) | PX4 role on the same wire
 #   SERIAL2  USART2 (PA2/PA3)  = PX4 TELEM2  -> uXRCE-DDS (Air-Unit connector)
 #   SERIAL3  USART3 (PD8/PD9)  = PX4 TELEM1  -> companion MAVLink / mavlink-router
-#   SERIAL4  UART4  (PA0/PA1)  = PX4 TELEM3  -> optical-flow (UP-T201) connector
+#   SERIAL4  UART4  (PA0/PA1)  = PX4 TELEM3  -> optical-flow sensor connector
 #   SERIAL5  USART6 (PC6/PC7)  = PX4 RC
 # (ttyS->UART order inferred from the PX4 nuttx defconfig; VERIFIED anchors:
 #  TELEM1=USART3, flow=UART4. CONFIRM RC/DDS against the board silkscreen on bench.)
@@ -45,7 +45,7 @@ EK3_SRC1_YAW   0       # no compass; gyro (or external-vision) yaw
 SERIAL2_PROTOCOL 45    # DDS (SerialProtocol_DDS_XRCE)
 SERIAL2_BAUD 115       # 115200 (raise to 921 for higher topic throughput)
 
-# --- UP-T201 flow + range as MAVLink on SERIAL4 = UART4 (PX4 flow/TELEM3) ---
+# --- optical-flow sensor (flow + range) as MAVLink on SERIAL4 = UART4 (PX4 flow/TELEM3) ---
 SERIAL4_PROTOCOL 2     # MAVLink2
 FLOW_TYPE 5            # MAVLink optical flow
 RNGFND1_TYPE 10        # MAVLink rangefinder

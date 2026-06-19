@@ -62,6 +62,15 @@ python3.12 Tools/scripts/uploader.py build/DroneBlocksH743AIO/bin/arducopter.apj
 
 See `docs/` for the full detail and the hard-won gotchas.
 
+## Notes / open items
+
+- **Indoor optical-flow + rangefinder sensor integration.** Bringing our flow
+  sensor up on ArduPilot for full indoor positioning (both flow and range, the
+  way it already works on PX4) needs a small, well-scoped firmware-side
+  integration step — ArduPilot supports the sensor classes involved, it's just
+  a matter of wiring our specific sensor to the right backend. Scoped but
+  **deferred**; details intentionally left out here, to revisit later.
+
 ## Relationship to PX4 / droneblocks-mavlink-tool
 
 This is a **separate toolchain** from our PX4 work. `droneblocks-mavlink-tool`

@@ -22,8 +22,10 @@ and just need confirming on our exact unit.
       right axes; set up a flight-mode switch.
 - [ ] **SD logging** — confirm a `.bin` dataflash log is written (validates the
       SDMMC pins).
-- [ ] **Flow + range** — UP-T201 on TELEM3: `FLOW_TYPE`, `RNGFND1_TYPE` report
-      data. (ArduPilot EKF3 indoor flow is a separate tuning exercise from PX4's
+- [ ] **Flow + range** — the optical-flow sensor on the flow port: `FLOW_TYPE`,
+      `RNGFND1_TYPE` report data. (Getting both flow and range up on ArduPilot
+      needs a small sensor-integration step — deferred, see the README note.
+      ArduPilot EKF3 indoor flow is also a separate tuning exercise from PX4's
       EKF2 — the PX4 flow work does not transfer.)
 
 Only after all of the above passes is a tethered hover warranted. The PX4 rate
