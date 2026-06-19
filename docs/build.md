@@ -12,6 +12,28 @@ Builds the ArduPilot bootloader + ArduCopter firmware for `DroneBlocksH743AIO`.
   python3.12 -m pip install --break-system-packages empy==3.3.4 future pexpect dronecan pymavlink pyserial
   ```
 
+## ROS 2 / DDS builds need `microxrceddsgen` (Java)
+
+Our board enables AP_DDS (`define AP_DDS_ENABLED 1` in the hwdef). The DDS build
+generates topic-support C from `.idl` via eProsima's **`microxrceddsgen`** — if
+it's not on `PATH`, `./waf configure` prints
+`Checking for program 'microxrceddsgen' : not found` and **silently builds with
+DDS off** (no error). One-time setup:
+
+```bash
+brew install openjdk@17
+export JAVA_HOME=/opt/homebrew/opt/openjdk@17
+export PATH="$JAVA_HOME/bin:$PATH"
+
+git clone --recurse-submodules https://github.com/ardupilot/Micro-XRCE-DDS-Gen.git
+cd Micro-XRCE-DDS-Gen && ./gradlew assemble
+export PATH="$PWD/scripts:$PATH"   # puts microxrceddsgen on PATH
+```
+
+Then configure/build with that `PATH` active. Verify DDS actually compiled in:
+`arm-none-eabi-nm build/DroneBlocksH743AIO/bin/arducopter | grep -c AP_DDS`
+(should be >0 — ~158 for us; flash grows ~42 KB).
+
 ## ⚠️ Use python3.12, not python3.14
 
 ArduPilot's in-process MAVLink header codegen **silently no-ops on Python

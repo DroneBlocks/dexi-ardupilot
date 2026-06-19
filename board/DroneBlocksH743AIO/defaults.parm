@@ -1,6 +1,11 @@
 # DroneBlocks H743-AIO — ArduCopter starting params (indoor optical-flow quad)
 # Mirrors the INTENT of our PX4 4701 indoor-flow airframe. Every value is a
 # starting point to validate on the bench — NOT a flight-ready tune.
+#
+# Serial map (rebased MicoAir SERIAL_ORDER OTG1 USART1 USART2 USART3 UART4 USART6 UART7 UART8):
+#   SERIAL0 USB        SERIAL1 USART1/GPS1   SERIAL2 USART2 (RC pins PA2/PA3)
+#   SERIAL3 USART3/TELEM1 (companion MAVLink) SERIAL4 UART4   SERIAL5 USART6
+#   SERIAL6 UART7 (flow, PE8/PE7)            SERIAL7 UART8
 
 # --- frame ---
 FRAME_CLASS 1          # Quad
@@ -27,15 +32,22 @@ EK3_SRC1_POSZ  2       # Rangefinder as height (parallels PX4 EKF2_HGT_REF=2)
 EK3_SRC1_VELZ  0
 EK3_SRC1_YAW   0       # no compass; gyro (or external-vision) yaw
 
-# --- UP-T201 flow + range arrive as MAVLink on TELEM3 (SERIAL4 = UART7) ---
-SERIAL4_PROTOCOL 2     # MAVLink2 (same idea as PX4 ingesting flow on TELEM3)
+# --- RC input: CRSF/ELRS on USART2 (SERIAL2, PA2/PA3 — PX4 RC port) ---
+SERIAL2_PROTOCOL 23    # RCIN
+
+# --- ROS 2 / micro-XRCE-DDS (AP_DDS) on UART4 (SERIAL4) ---
+# Reuses the same micro-ROS agent DEXI-OS already runs for PX4. Wire the
+# companion (or a USB-serial adapter) to UART4 and run MicroXRCEAgent; the
+# /ap/* topics then appear in `ros2 topic list`. This is the firmware-agnostic
+# DDS probe / future DEXI-OS ROS2 link.
+SERIAL4_PROTOCOL 45    # DDS (SerialProtocol_DDS_XRCE)
+SERIAL4_BAUD 115       # 115200 (raise to 921 for higher topic throughput)
+
+# --- UP-T201 flow + range as MAVLink on UART7 (SERIAL6, TELEM3-equivalent) ---
+SERIAL6_PROTOCOL 2     # MAVLink2 (PX4 ingested flow on TELEM3)
 FLOW_TYPE 5            # MAVLink optical flow
 RNGFND1_TYPE 10        # MAVLink rangefinder
 RNGFND1_ORIENT 25      # down
-
-# --- RC input on USART2 (SERIAL5) ---
-SERIAL5_PROTOCOL 23    # RCIN  (CRSF/ELRS full-duplex on PA2/PA3)
-# For ELRS/CRSF telemetry set RSSI_TYPE / RC_OPTIONS as needed.
 
 # --- arming: keep checks ON; relax deliberately for indoor bench if needed ---
 ARMING_CHECK 1
